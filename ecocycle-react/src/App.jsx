@@ -26,7 +26,7 @@ export default function App() {
       <Route
         path="/community-home"
         element={
-          token && user?.role === "community" && user?.status === "approved"
+          token && user?.role === "community" && user?.status === "active"
             ? <CommunityHome />
             : <Navigate to="/" />
         }
