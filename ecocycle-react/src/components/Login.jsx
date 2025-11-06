@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,28 +22,33 @@ export default function Login() {
       if (res.ok) {
         // Save token and user
         localStorage.setItem("token", data.token);
-        if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+          console.log("🟣 User saved:", data.user);
+        }
 
-        // Redirect based on role using navigate
-        const role = data.user.role;
-        if (role === "operational") {
-          navigate("/operational-home");
-        } else if (role === "community") {
-          if (data.user.status === "approved") {
-            navigate("/community-home");
+        // Redirect based on role + status
+        if (data.user.role === "operational") {
+          window.location.href = "/operational-home";
+        } 
+        else if (data.user.role === "community") {
+          if (data.user.status === "active") {
+            window.location.href = "/community-home";
           } else {
             setMessage("Your account is pending approval.");
+            return;
           }
-        } else {
-          // regular user
-          navigate("/home");
+        } 
+        else {
+          window.location.href = "/home";
         }
+
       } else {
         setMessage(data.message || "Login failed.");
       }
     } catch (err) {
+      console.error("Error to login:", err);
       setMessage("Server connection error.");
-      console.error(err);
     }
   };
 
