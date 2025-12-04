@@ -22,32 +22,32 @@ export default function Login() {
       const data = await res.json();
 
       if (res.ok) {
-        
-        localStorage.setItem("token", data.token);
-        if (data.user) {
-          localStorage.setItem("user", JSON.stringify(data.user));
-        }
 
-        
-        window.dispatchEvent(new Event("authChanged"));
+  // SALVA NO SESSION STORAGE (e não no localStorage)
+  sessionStorage.setItem("token", data.token);
 
-      
-        if (data.user.role === "operational") {
-          navigate("/operational-home");
-        } 
-        else if (data.user.role === "community") {
-          if (data.user.status === "active") {
-            navigate("/community-home");
-          } else {
-            setMessage("Your account is pending approval.");
-            return;
-          }
-        } 
-        else {
-          navigate("/home");
-        }
+  if (data.user) {
+    sessionStorage.setItem("user", JSON.stringify(data.user));
+  }
 
-      } else {
+  // Dispara evento para atualizar contexto
+  window.dispatchEvent(new Event("authChanged"));
+
+  // Redirecionamento por role
+  if (data.user.role === "operational") {
+    navigate("/operational-home");
+  } else if (data.user.role === "community") {
+    if (data.user.status === "active") {
+      navigate("/community-home");
+    } else {
+      setMessage("Your account is pending approval.");
+      return;
+    }
+  } else {
+    navigate("/home");
+  }
+}
+else {
         setMessage(data.message || "Login failed.");
       }
     } catch (err) {

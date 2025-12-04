@@ -1,13 +1,13 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 export default function UserHeader() {
   const navigate = useNavigate();
+
+  // PUXA DO SESSION STORAGE (igual o Login e o App)
   const [user, setUser] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem("user"));
+      return JSON.parse(sessionStorage.getItem("user"));
     } catch {
       return null;
     }
@@ -16,18 +16,16 @@ export default function UserHeader() {
   useEffect(() => {
     const syncUser = () => {
       try {
-        setUser(JSON.parse(localStorage.getItem("user")));
+        setUser(JSON.parse(sessionStorage.getItem("user")));
       } catch {
         setUser(null);
       }
     };
 
-    
     const onStorage = (e) => {
       if (e.key === "user" || e.key === "token") syncUser();
     };
 
-    
     const onAuthChanged = () => syncUser();
 
     window.addEventListener("storage", onStorage);
@@ -40,14 +38,12 @@ export default function UserHeader() {
   }, []);
 
   const handleLogout = () => {
-    
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    // REMOVE DO SESSION STORAGE!
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
 
-   
     window.dispatchEvent(new Event("authChanged"));
 
-    
     navigate("/login");
   };
 

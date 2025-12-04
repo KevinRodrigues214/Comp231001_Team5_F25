@@ -19,10 +19,11 @@ import ProtectedRoute from "./ProtectedRoute";
 
 
 export default function App() {
-  const [token, setToken] = useState(() => localStorage.getItem("token"));
+  const [token, setToken] = useState(() => sessionStorage.getItem("token"));
+
   const [user, setUser] = useState(() => {
     try {
-      return JSON.parse(localStorage.getItem("user"));
+      return JSON.parse(sessionStorage.getItem("user"));
     } catch {
       return null;
     }
@@ -30,9 +31,9 @@ export default function App() {
 
  
   const syncAuthState = () => {
-    setToken(localStorage.getItem("token"));
+    setToken(sessionStorage.getItem("token"));
     try {
-      setUser(JSON.parse(localStorage.getItem("user")));
+      setUser(JSON.parse(sessionStorage.getItem("user")));
     } catch {
       setUser(null);
     }
@@ -61,13 +62,24 @@ export default function App() {
   return (
     <Routes>
       {/* Root */}
-      <Route path="/" element={token ? <Home /> : <Navigate to="/login" />} />
+      <Route path="/" element={<Navigate to="/login" replace />} />
 
       {/* Auth */}
       <Route
-        path="/login"
-        element={!token ? <Login /> : <Navigate to="/" />}
-      />
+  path="/login"
+  element={
+    !token ? (
+      <Login />
+    ) : user?.role === "community" ? (
+      <Navigate to="/community-home" />
+    ) : user?.role === "operational" ? (
+      <Navigate to="/operational-home" />
+    ) : (
+      <Navigate to="/home" />
+    )
+  }
+/>
+
       <Route
         path="/register"
         element={!token ? <Register /> : <Navigate to="/" />}

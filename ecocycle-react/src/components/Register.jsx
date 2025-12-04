@@ -11,7 +11,7 @@ export default function Register() {
   const [businessName, setBusinessName] = useState("");
   const [message, setMessage] = useState("");
 
-  const navigate = useNavigate(); // ✅ useNavigate hook
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +44,7 @@ export default function Register() {
           if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
 
           setMessage("Account created! Redirecting to login...");
-          setTimeout(() => navigate("/login"), 1000); // ✅ navigate instead of window.location.href
+          setTimeout(() => navigate("/login"), 1000);
         }
       } else {
         setMessage(
