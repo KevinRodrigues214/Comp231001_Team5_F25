@@ -14,6 +14,8 @@ import RewardsPage from "./components/RewardsPage";
 import RecyclingMapPage from "./components/RecyclingMapPage";
 import PhotoAIPage from "./components/PhotoAIPage";
 import PickupRequestsPage from "./components/PickupRequestsPage";
+import HelpPage from "./components/HelpPage";
+
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -142,6 +144,15 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+  path="/help-page"
+  element={
+    <ProtectedRoute token={token}>
+      <HelpPage />
+    </ProtectedRoute>
+  }
+/>
+
 
       {/* Community dashboard */}
       <Route

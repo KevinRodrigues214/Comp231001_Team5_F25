@@ -850,3 +850,173 @@ body {
 .section-link-btn:hover {
   background: #ecfdf5;
 }
+.help-page {
+  min-height: 100vh;
+  padding: 2rem;
+  background: #f5fff6;
+  font-family: Poppins, sans-serif;
+  color: #124d2b;
+}
+
+.help-container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+.help-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.help-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.help-subtitle {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 1rem;
+}
+
+.faq-list .faq-item {
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  background: #f9fafb;
+  overflow: hidden;
+}
+
+.faq-question {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+}
+
+.faq-arrow {
+  transition: transform 0.3s ease;
+}
+
+.faq-arrow.rotate {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  padding: 0.75rem 1rem;
+  display: none;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.faq-item.open .faq-answer {
+  display: block;
+}
+
+.faq-contact {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.faq-contact ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+
+.faq-contact li {
+  margin-bottom: 0.25rem;
+}
+
+.help-form-aside h2 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.help-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.help-form input,
+.help-form textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: none;
+}
+
+.help-error {
+  color: #b91c1c;
+  margin-top: 0.5rem;
+}
+
+.help-success {
+  color: #15803d;
+  margin-top: 0.5rem;
+}
+
+.help-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.send-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+}
+
+.send-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.clear-btn {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+}
+
+.help-privacy {
+  font-size: 0.75rem;
+  color: #4b5563;
+  margin-top: 0.5rem;
+}
+
+.help-privacy a {
+  text-decoration: underline;
+  color: #16a34a;
+}
+
+.help-footer {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.8rem;
+  color: #4b5563;
+  background: #f5fff6;
+}

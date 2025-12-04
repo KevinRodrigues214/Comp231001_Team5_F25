@@ -26,7 +26,8 @@ let challengesCollection,
   recycleStationsCollection,
   rewardsCollection,
   usersCollection,
-  pickupRequestsCollection;
+  pickupRequestsCollection,
+  supportMessagesCollection;
 
 // Connect to MongoDB
 client.connect().then(() => {
@@ -39,6 +40,8 @@ client.connect().then(() => {
   rewardsCollection = db.collection("Rewards");
   usersCollection = db.collection("Users");
   pickupRequestsCollection = db.collection("PickupRequests");
+  supportMessagesCollection = db.collection("SupportMessages");
+
 }).catch((err) => {
   console.error("MongoDB connection error:", err);
 });
@@ -361,6 +364,40 @@ app.post("/api/pickup-requests", async (req, res) => {
     res.status(500).json({ error: "Failed to create pick-up request" });
   }
 });
+
+// POST support message from Help Page
+app.post("/api/support/send", async (req, res) => {
+  if (!supportMessagesCollection) {
+    return res.status(500).json({ error: "Database not ready" });
+  }
+
+  try {
+    const { name, email, message } = req.body;
+
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const doc = {
+      name,
+      email,
+      message,
+      createdAt: new Date(),
+    };
+
+    const result = await supportMessagesCollection.insertOne(doc);
+
+    res
+      .status(201)
+      .json({ success: true, message: "Support message sent", id: result.insertedId });
+  } catch (err) {
+    console.error("Error saving support message:", err);
+    res.status(500).json({ error: "Failed to send support message" });
+  }
+});
+
+
+
 
 // Start server
 app.listen(port, () => {

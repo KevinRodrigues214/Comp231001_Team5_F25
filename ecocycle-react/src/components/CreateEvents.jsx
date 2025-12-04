@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import "../components/style/CreateEvents.css";
+
 
 export default function CreateEvents() {
   const [formData, setFormData] = useState({

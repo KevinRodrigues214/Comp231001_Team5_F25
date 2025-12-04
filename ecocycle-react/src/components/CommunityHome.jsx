@@ -1,15 +1,9 @@
 import { useState } from "react";
 import CreateEvents from "./CreateEvents";
 import CreateRewards from "./CreateRewards";
+import HelpPage from "./HelpPage";
 
-function Help() {
-  return (
-    <div>
-      <h3>Help</h3>
-      <p>Find FAQs or contact support here.</p>
-    </div>
-  );
-}
+
 
 export default function CommunityHome() {
   const [activeTab, setActiveTab] = useState("events");
@@ -44,7 +38,7 @@ export default function CommunityHome() {
       <div className="tab-content">
         {activeTab === "events" && <CreateEvents />}
         {activeTab === "rewards" && <CreateRewards />}
-        {activeTab === "help" && <Help />}
+        {activeTab === "help" && <HelpPage />}
       </div>
 
       {/* Optional: simple styling */}

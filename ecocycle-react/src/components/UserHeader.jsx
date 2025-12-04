@@ -61,6 +61,7 @@ export default function UserHeader() {
         <a onClick={() => navigate("/recycling-map")}>Map</a>
         <a onClick={() => navigate("/photo-ai")}>Photo AI</a>
         <a onClick={() => navigate("/pickup-requests")}>Pick-ups</a>
+         <a onClick={() => navigate("/help-page")}>Help</a>
       </nav>
 
       <div className="header-right">

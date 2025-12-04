@@ -1,0 +1,78 @@
+.create-rewards-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.create-rewards-container h2 {
+  font-size: 1.8rem;
+  color: #2f855a; /* verde */
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.create-rewards-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.create-rewards-container input,
+.create-rewards-container textarea {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.create-rewards-container input:focus,
+.create-rewards-container textarea:focus {
+  outline: none;
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.4);
+}
+
+.create-rewards-container textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.create-rewards-container button {
+  padding: 0.7rem 1rem;
+  border: none;
+  background: #38a169; /* verde */
+  color: white;
+  font-weight: 500;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+}
+
+.create-rewards-container button:hover {
+  background: #2f855a;
+  opacity: 0.95;
+}
+
+.create-rewards-container p {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: 500;
+  color: #333;
+}
+
+@media (max-width: 600px) {
+  .create-rewards-container {
+    padding: 1rem;
+  }
+
+  .create-rewards-container input,
+  .create-rewards-container textarea,
+  .create-rewards-container button {
+    font-size: 0.95rem;
+  }
+}
