@@ -20,7 +20,10 @@ app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
 }));
+console.log("🔑 Gemini API Key:", process.env.GEMINI_API_KEY);
 
+const recycleRouter = require('./routes/recycle');
+app.use('/api/recycle', recycleRouter);
 let challengesCollection,
   eventsCollection,
   recycleStationsCollection,

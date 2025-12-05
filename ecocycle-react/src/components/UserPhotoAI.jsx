@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function UserPhotoAI({ fullPage = false }) {
   const [imagePreview, setImagePreview] = useState(null);
-  const [result, setResult] = useState("");
-  const [confidence, setConfidence] = useState("");
+  const [fileData, setFileData] = useState(null);
+  const [resultText, setResultText] = useState(""); // Aqui vai mostrar material + value
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -12,28 +13,44 @@ export default function UserPhotoAI({ fullPage = false }) {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    setFileData(file);
+
     const reader = new FileReader();
     reader.onload = () => {
       setImagePreview(reader.result);
-      setResult("");
-      setConfidence("");
+      setResultText("");
     };
     reader.readAsDataURL(file);
   };
 
-  const handleAnalyze = () => {
-    if (!imagePreview) return;
+  const handleAnalyze = async () => {
+    if (!fileData) return;
     setLoading(true);
+    setResultText("");
 
-    // Fake AI result
-    setTimeout(() => {
-      const fakeResult =
-        "This looks like a plastic container. Place it in your recycling bin if your city accepts #1–#7 plastics.";
-      const fakeConfidence = "Confidence: ~82% (demo only)";
-      setResult(fakeResult);
-      setConfidence(fakeConfidence);
-      setLoading(false);
-    }, 900);
+    try {
+      const formData = new FormData();
+      formData.append("image", fileData);
+
+      // Chamada para o backend
+      const res = await axios.post(
+        "http://localhost:5000/api/recycle/analyze",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      // Backend retorna { material: "...", value: "..." }
+      const { material, value } = res.data;
+      setResultText(`material = ${material}\nvalue = ${value}`);
+
+    } catch (err) {
+      console.error(err);
+      setResultText("Error: Could not analyze item.");
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -42,8 +59,7 @@ export default function UserPhotoAI({ fullPage = false }) {
         <div>
           <h2 className="photo-title">Photo / AI Recognition</h2>
           <p className="photo-subtitle">
-            Upload a picture of an item to get a suggestion on how to dispose of
-            it.
+            Upload a picture of an item to get a suggestion on how to dispose of it.
           </p>
         </div>
         {!fullPage && (
@@ -74,7 +90,7 @@ export default function UserPhotoAI({ fullPage = false }) {
             type="button"
             className="photo-analyze-btn"
             onClick={handleAnalyze}
-            disabled={!imagePreview || loading}
+            disabled={!fileData || loading}
           >
             {loading ? "Analyzing..." : "Analyze item"}
           </button>
@@ -83,19 +99,11 @@ export default function UserPhotoAI({ fullPage = false }) {
         <div className="photo-result">
           <div className="photo-result-card">
             <h3>Result</h3>
-            {result ? (
-              <>
-                <p>{result}</p>
-                <p className="photo-confidence">{confidence}</p>
-                <p className="photo-note">
-                  This is a demo suggestion only. Always follow your city&apos;s
-                  official recycling guidelines.
-                </p>
-              </>
+            {resultText ? (
+              <pre style={{ whiteSpace: "pre-wrap" }}>{resultText}</pre>
             ) : (
               <p className="photo-note photo-result-empty">
-                Upload a photo and click <strong>“Analyze item”</strong> to see
-                a suggestion.
+                Upload a photo and click <strong>“Analyze item”</strong>.
               </p>
             )}
           </div>
