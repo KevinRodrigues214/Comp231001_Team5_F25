@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-function UserEvents({ showViewAll = false }) {      // ⬅️ accept prop
+function UserEvents({ showViewAll = false }) {
   const [events, setEvents] = useState([]);
+  const [joinedEvents, setJoinedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ function UserEvents({ showViewAll = false }) {      // ⬅️ accept prop
         if (!res.ok) throw new Error("Failed to load events");
 
         const data = await res.json();
-        setEvents(data);
+        setEvents(data || []);
       } catch (err) {
         console.error(err);
         setError("Could not load events.");
@@ -27,7 +29,53 @@ function UserEvents({ showViewAll = false }) {      // ⬅️ accept prop
     }
 
     loadEvents();
+
+    
+    const storedJoined = sessionStorage.getItem("joinedEvents");
+    if (storedJoined) {
+      setJoinedEvents(JSON.parse(storedJoined));
+    }
   }, []);
+
+  const handleJoinEvent = async (eventId, eventPoints) => {
+  const storedUser = sessionStorage.getItem("user");
+  if (!storedUser) return alert("User not logged in!");
+
+  const user = JSON.parse(storedUser);
+  const userId = user.id;
+
+  try {
+    await axios.post("http://localhost:5000/api/users/add-points", {
+      userId,
+      points: eventPoints,
+    });
+
+    const currentBalance = Number(user.balance) || 0;
+    const pointsToAdd = Number(eventPoints) || 0;
+    const newBalance = Number((currentBalance + pointsToAdd).toFixed(3));
+
+    sessionStorage.setItem(
+      "user",
+      JSON.stringify({ ...user, balance: newBalance })
+    );
+
+    const newJoined = [...joinedEvents, eventId];
+    setJoinedEvents(newJoined);
+    sessionStorage.setItem("joinedEvents", JSON.stringify(newJoined));
+
+    alert(`You joined the event! ${pointsToAdd} points added!`);
+  } catch (err) {
+    if (err.response?.data?.error === "ErroJoinInEvent") {
+      const newJoined = [...joinedEvents, eventId];
+      setJoinedEvents(newJoined);
+      sessionStorage.setItem("joinedEvents", JSON.stringify(newJoined));
+    } else {
+      console.error(err);
+      alert("Error joining event.");
+    }
+  }
+};
+
 
   if (loading) return <div className="events-section">Loading events...</div>;
   if (error) return <div className="events-section error-text">{error}</div>;
@@ -42,7 +90,6 @@ function UserEvents({ showViewAll = false }) {      // ⬅️ accept prop
           </p>
         </div>
 
-        {/* ⬇️ Only show on dashboard (when showViewAll = true) */}
         {showViewAll && (
           <button
             type="button"
@@ -78,7 +125,16 @@ function UserEvents({ showViewAll = false }) {      // ⬅️ accept prop
               )}
             </div>
 
-            <button className="event-btn">View / Join event</button>
+            
+            {e.eventPoints && !joinedEvents.includes(e._id) && (
+              <button
+                className="event-btn"
+                type="button"
+                onClick={() => handleJoinEvent(e._id, e.eventPoints)}
+              >
+                Join event
+              </button>
+            )}
           </article>
         ))}
       </div>

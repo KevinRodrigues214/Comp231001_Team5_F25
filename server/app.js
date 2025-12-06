@@ -68,6 +68,7 @@ app.post('/api/auth/register', async (req, res) => {
       passwordHash,
       role,
       status,
+      balance: 0,
       createdAt: new Date()
     };
 
@@ -85,6 +86,72 @@ app.post('/api/auth/register', async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
+
+
+app.post('/api/users/add-points', async (req, res) => {
+  const { userId, points } = req.body;
+  console.log("🔹 Add points request body:", req.body);
+
+  if (!userId || points === undefined) {
+    return res.status(400).json({ message: "Missing fields" });
+  }
+
+  const pointsNumber = Number(points);
+  console.log("🔹 Converted pointsNumber:", pointsNumber);
+
+  if (isNaN(pointsNumber)) {
+    return res.status(400).json({ message: "Points must be a number" });
+  }
+
+  try {
+    const result = await usersCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $inc: { balance: pointsNumber } }
+    );
+
+    console.log("🔹 Update result:", result);
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json({ message: "Points added!", added: pointsNumber });
+  } catch (err) {
+    console.error("❌ Error updating points:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+// GET user by ID
+app.get('/api/users/:id', async (req, res) => {
+  const userId = req.params.id;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  try {
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    
+    return res.json({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      status: user.status,
+      balance: user.balance || 0,
+      createdAt: user.createdAt,
+    });
+  } catch (err) {
+    console.error("Error fetching user:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 // LOGIN
 app.post('/api/auth/login',
@@ -258,6 +325,7 @@ app.post("/api/rewards", async (req, res) => {
       pointsRequired: Number(pointsRequired),
       couponCode: couponCode || null,
       storeName: storeName || null,
+      
       createdAt: new Date(),
     };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -7,19 +7,48 @@ export default function UserPhotoAI({ fullPage = false }) {
   const [fileData, setFileData] = useState(null);
   const [resultText, setResultText] = useState(""); 
   const [loading, setLoading] = useState(false);
+  const [extractedValue, setExtractedValue] = useState(0);
+  const [userBalance, setUserBalance] = useState(0);
+
   const navigate = useNavigate();
+
+  
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const storedUser = sessionStorage.getItem("user");
+      if (!storedUser) return;
+
+      const user = JSON.parse(storedUser);
+      const userId = user.id;
+
+      try {
+        const res = await axios.get(`http://localhost:5000/api/users/${userId}`);
+        const userData = res.data;
+
+        
+        const roundedBalance = Number((userData.balance || 0).toFixed(3));
+        setUserBalance(roundedBalance);
+
+        
+        sessionStorage.setItem("user", JSON.stringify({ ...userData, balance: roundedBalance }));
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setFileData(file);
+    setResultText("");
+    setExtractedValue(0);
 
     const reader = new FileReader();
-    reader.onload = () => {
-      setImagePreview(reader.result);
-      setResultText("");
-    };
+    reader.onload = () => setImagePreview(reader.result);
     reader.readAsDataURL(file);
   };
 
@@ -27,30 +56,62 @@ export default function UserPhotoAI({ fullPage = false }) {
     if (!fileData) return;
     setLoading(true);
     setResultText("");
+    setExtractedValue(0);
 
     try {
       const formData = new FormData();
       formData.append("image", fileData);
 
-      
       const res = await axios.post(
         "http://localhost:5000/api/recycle/analyze",
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
 
-      
       const { material, value } = res.data;
-      setResultText(`material = ${material}\nvalue = ${value}`);
+      const numericValue = Number(String(value).replace(/[^0-9.]+/g, ""));
+      const roundedValue = Number(numericValue.toFixed(3));
+      setExtractedValue(roundedValue);
 
+      setResultText(`material = ${material}\nvalue = ${value}`);
     } catch (err) {
       console.error(err);
       setResultText("Error: Could not analyze item.");
     }
 
     setLoading(false);
+  };
+
+  const handleAddPoints = async () => {
+    const storedUser = sessionStorage.getItem("user");
+    if (!storedUser) {
+      alert("User not logged in!");
+      return;
+    }
+
+    const user = JSON.parse(storedUser);
+    const userId = user.id;
+
+    try {
+      await axios.post("http://localhost:5000/api/users/add-points", {
+        userId,
+        points: extractedValue,
+      });
+
+      alert(`Added ${extractedValue} points!`);
+
+      
+      const newBalance = Number(((user.balance || 0) + extractedValue).toFixed(3));
+      setUserBalance(newBalance);
+
+      
+      sessionStorage.setItem("user", JSON.stringify({ ...user, balance: newBalance }));
+
+      setExtractedValue(0);
+    } catch (err) {
+      console.error(err);
+      alert("Error adding points.");
+    }
   };
 
   return (
@@ -61,6 +122,7 @@ export default function UserPhotoAI({ fullPage = false }) {
           <p className="photo-subtitle">
             Upload a picture of an item to get a suggestion on how to dispose of it.
           </p>
+          <p><strong>Your Balance:</strong> {userBalance} points</p>
         </div>
         {!fullPage && (
           <button
@@ -94,6 +156,16 @@ export default function UserPhotoAI({ fullPage = false }) {
           >
             {loading ? "Analyzing..." : "Analyze item"}
           </button>
+
+          {extractedValue > 0 && (
+            <button
+              type="button"
+              className="photo-analyze-btn"
+              onClick={handleAddPoints}
+            >
+              Add Points
+            </button>
+          )}
         </div>
 
         <div className="photo-result">

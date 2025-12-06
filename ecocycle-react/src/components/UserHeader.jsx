@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function UserHeader() {
-  const navigate = useNavigate();
 
-  // PUXA DO SESSION STORAGE (igual o Login e o App)
+function useUser() {
   const [user, setUser] = useState(() => {
     try {
       return JSON.parse(sessionStorage.getItem("user"));
@@ -14,36 +12,44 @@ export default function UserHeader() {
   });
 
   useEffect(() => {
-    const syncUser = () => {
+    const handleStorage = () => {
       try {
-        setUser(JSON.parse(sessionStorage.getItem("user")));
+        const storedUser = JSON.parse(sessionStorage.getItem("user"));
+        setUser(storedUser || null);
       } catch {
         setUser(null);
       }
     };
 
-    const onStorage = (e) => {
-      if (e.key === "user" || e.key === "token") syncUser();
+    
+    const originalSetItem = sessionStorage.setItem;
+    sessionStorage.setItem = function(key, value) {
+      originalSetItem.apply(this, [key, value]);
+      if (key === "user") handleStorage();
     };
 
-    const onAuthChanged = () => syncUser();
-
-    window.addEventListener("storage", onStorage);
-    window.addEventListener("authChanged", onAuthChanged);
+    
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("authChanged", handleStorage);
 
     return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("authChanged", onAuthChanged);
+      sessionStorage.setItem = originalSetItem;
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("authChanged", handleStorage);
     };
   }, []);
 
+  return user;
+}
+
+export default function UserHeader() {
+  const navigate = useNavigate();
+  const user = useUser();
+
   const handleLogout = () => {
-    // REMOVE DO SESSION STORAGE!
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("user");
-
     window.dispatchEvent(new Event("authChanged"));
-
     navigate("/login");
   };
 
@@ -61,13 +67,27 @@ export default function UserHeader() {
         <a onClick={() => navigate("/recycling-map")}>Map</a>
         <a onClick={() => navigate("/photo-ai")}>Photo AI</a>
         <a onClick={() => navigate("/pickup-requests")}>Pick-ups</a>
-         <a onClick={() => navigate("/help-page")}>Help</a>
+        <a onClick={() => navigate("/help-page")}>Help</a>
       </nav>
 
-      <div className="header-right">
-        <span className="user-name">
-          Hi, {user?.name || user?.email || "User"}!
-        </span>
+      <div
+        className="header-right"
+        style={{ display: "flex", alignItems: "center", gap: "12px" }}
+      >
+        <div
+          className="user-info-header"
+          style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}
+        >
+          <span className="user-name">
+            Hi, {user?.name || user?.email || "User"}!
+          </span>
+          {user?.balance !== undefined && (
+            <span className="user-balance" style={{ fontSize: "12px", color: "#2a9d8f" }}>
+  💰 Balance: {Number(user.balance).toFixed(1)} pts
+</span>
+
+          )}
+        </div>
         <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>

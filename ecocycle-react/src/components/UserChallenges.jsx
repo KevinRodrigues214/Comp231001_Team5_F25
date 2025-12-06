@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function UserChallenges({ showViewAll = true }) {
   const [challenges, setChallenges] = useState([]);
+  const [joinedChallenges, setJoinedChallenges] = useState([]);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  
   useEffect(() => {
     fetch("http://localhost:5000/api/challenges")
       .then((res) => res.json())
@@ -14,9 +17,47 @@ export default function UserChallenges({ showViewAll = true }) {
         console.error(err);
         setError("Could not load challenges.");
       });
+
+    
+    const storedJoined = sessionStorage.getItem("joinedChallenges");
+    if (storedJoined) {
+      setJoinedChallenges(JSON.parse(storedJoined));
+    }
   }, []);
 
-  const visible = challenges.slice(0, 2); // what shows on dashboard
+  const handleJoinChallenge = async (challengeId, rewardPoints) => {
+    const storedUser = sessionStorage.getItem("user");
+    if (!storedUser) return alert("User not logged in!");
+    
+    const user = JSON.parse(storedUser);
+    const userId = user.id;
+
+    try {
+      
+      await axios.post("http://localhost:5000/api/users/add-points", {
+        userId,
+        points: rewardPoints,
+      });
+
+      const newBalance = Number(((user.balance || 0) + rewardPoints).toFixed(3));
+      sessionStorage.setItem(
+        "user",
+        JSON.stringify({ ...user, balance: newBalance })
+      );
+
+      
+      const newJoined = [...joinedChallenges, challengeId];
+      setJoinedChallenges(newJoined);
+      sessionStorage.setItem("joinedChallenges", JSON.stringify(newJoined));
+
+      alert(`You joined the challenge! ${rewardPoints} points added!`);
+    } catch (err) {
+      console.error(err);
+      alert("Error joining challenge.");
+    }
+  };
+
+  const visible = challenges.slice(0, 2); 
 
   return (
     <section className="weekly-section">
@@ -28,7 +69,6 @@ export default function UserChallenges({ showViewAll = true }) {
           </p>
         </div>
 
-        {/* 👇 only show this on dashboard when showViewAll = true */}
         {showViewAll && (
           <button
             type="button"
@@ -60,9 +100,16 @@ export default function UserChallenges({ showViewAll = true }) {
                 Duration: {ch.duration_days} days
               </span>
             </div>
-            <button className="challenge-btn" type="button">
-              Join challenge
-            </button>
+           
+            {!joinedChallenges.includes(ch._id) && (
+              <button
+                className="challenge-btn"
+                type="button"
+                onClick={() => handleJoinChallenge(ch._id, ch.reward_points)}
+              >
+                Join challenge
+              </button>
+            )}
           </article>
         ))}
       </div>
