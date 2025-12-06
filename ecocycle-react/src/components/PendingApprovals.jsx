@@ -5,7 +5,7 @@ export default function PendingApprovals() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  // Busca os usuários pendentes
+  // Fetch pending users
   const fetchPendingUsers = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/users/pending");
@@ -14,7 +14,7 @@ export default function PendingApprovals() {
       setLoading(false);
     } catch (err) {
       console.error(err);
-      setMessage("Erro ao buscar usuários pendentes.");
+      setMessage("Error fetching pending users.");
       setLoading(false);
     }
   };
@@ -23,50 +23,51 @@ export default function PendingApprovals() {
     fetchPendingUsers();
   }, []);
 
-  // Aprovar usuário
+  // Approve user
   const handleApprove = async (id) => {
     try {
       const res = await fetch(`http://localhost:5000/api/users/approve/${id}`, {
         method: "PATCH",
       });
       if (res.ok) {
-        setMessage("Usuário aprovado!");
+        setMessage("User approved!");
         fetchPendingUsers();
       } else {
-        setMessage("Erro ao aprovar usuário.");
+        setMessage("Error approving user.");
       }
     } catch (err) {
       console.error(err);
-      setMessage("Erro de conexão ao aprovar usuário.");
+      setMessage("Connection error while approving user.");
     }
   };
 
-  // Rejeitar usuário
+  // Reject user
   const handleReject = async (id) => {
     try {
       const res = await fetch(`http://localhost:5000/api/users/reject/${id}`, {
         method: "PATCH",
       });
       if (res.ok) {
-        setMessage("Usuário rejeitado!");
+        setMessage("User rejected!");
         fetchPendingUsers();
       } else {
-        setMessage("Erro ao rejeitar usuário.");
+        setMessage("Error rejecting user.");
       }
     } catch (err) {
       console.error(err);
-      setMessage("Erro de conexão ao rejeitar usuário.");
+      setMessage("Connection error while rejecting user.");
     }
   };
 
-  if (loading) return <p>Carregando usuários pendentes...</p>;
+  if (loading) return <p>Loading pending users...</p>;
 
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Pending Community Users</h2>
       {message && <p className="mb-2 text-green-600">{message}</p>}
+
       {pendingUsers.length === 0 ? (
-        <p>Nenhum usuário pendente no momento.</p>
+        <p>No pending users at the moment.</p>
       ) : (
         <table className="min-w-full border">
           <thead>
@@ -77,6 +78,7 @@ export default function PendingApprovals() {
               <th className="px-4 py-2 border">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {pendingUsers.map((user) => (
               <tr key={user._id}>
@@ -100,6 +102,7 @@ export default function PendingApprovals() {
               </tr>
             ))}
           </tbody>
+
         </table>
       )}
     </div>

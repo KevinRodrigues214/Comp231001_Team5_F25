@@ -5,7 +5,7 @@ import axios from "axios";
 export default function UserPhotoAI({ fullPage = false }) {
   const [imagePreview, setImagePreview] = useState(null);
   const [fileData, setFileData] = useState(null);
-  const [resultText, setResultText] = useState(""); // Aqui vai mostrar material + value
+  const [resultText, setResultText] = useState(""); 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ export default function UserPhotoAI({ fullPage = false }) {
       const formData = new FormData();
       formData.append("image", fileData);
 
-      // Chamada para o backend
+      
       const res = await axios.post(
         "http://localhost:5000/api/recycle/analyze",
         formData,
@@ -41,7 +41,7 @@ export default function UserPhotoAI({ fullPage = false }) {
         }
       );
 
-      // Backend retorna { material: "...", value: "..." }
+      
       const { material, value } = res.data;
       setResultText(`material = ${material}\nvalue = ${value}`);
 
