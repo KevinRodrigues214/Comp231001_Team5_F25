@@ -6,18 +6,22 @@ export default function PendingApprovals() {
   const [message, setMessage] = useState("");
 
   // Fetch pending users
-  const fetchPendingUsers = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/users/pending");
-      const data = await res.json();
-      setPendingUsers(data);
-      setLoading(false);
-    } catch (err) {
-      console.error(err);
-      setMessage("Error fetching pending users.");
-      setLoading(false);
-    }
-  };
+const fetchPendingUsers = async () => {
+  try {
+    const res = await fetch("http://localhost:5000/api/users/pending");
+    const data = await res.json();
+
+    // garante que seja sempre um array
+    setPendingUsers(Array.isArray(data) ? data : []);
+    setLoading(false);
+  } catch (err) {
+    console.error(err);
+    setMessage("Error fetching pending users.");
+    setPendingUsers([]); // fallback
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchPendingUsers();

@@ -45,12 +45,10 @@ export default function OperationalHeader({ activeTab, setActiveTab }) {
 
   return (
     <header className="header">
-      {/* LEFT: LOGO */}
       <div className="header-left">
         <img src="/logo.png" className="logo" alt="EcoCycle Logo" />
       </div>
 
-      {/* CENTER NAVIGATION (Operational Tabs) */}
       <nav className="header-nav">
         <a
           className={activeTab === "recycling" ? "active" : ""}
@@ -95,7 +93,7 @@ export default function OperationalHeader({ activeTab, setActiveTab }) {
         </a>
       </nav>
 
-      {/* RIGHT: USER + LOGOUT */}
+   
       <div className="header-right">
         <span className="user-name">
           Hi, Operational Admin!

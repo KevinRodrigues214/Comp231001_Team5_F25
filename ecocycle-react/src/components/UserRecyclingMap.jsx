@@ -58,7 +58,7 @@ function UserRecyclingMap({ fullPage = false, showViewAll = false }) {
 
   return (
     <section className="recycle-section">
-      {/* On dashboard we show this small title; on full page we hide it */}
+     
       {!fullPage && (
         <div className="recycle-header-row">
           <div>

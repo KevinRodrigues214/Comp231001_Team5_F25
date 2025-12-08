@@ -1,6 +1,4 @@
-/* ============================
-   GENERAL PAGE LAYOUT
-============================ */
+
 .operational-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -15,9 +13,7 @@
   color: #2b5a2b;
 }
 
-/* ============================
-   NAVIGATION TABS / BUTTONS
-============================ */
+
 .navbar {
   display: flex;
   flex-wrap: wrap;
@@ -45,9 +41,7 @@
   color: white;
 }
 
-/* ============================
-   CONTENT AREA
-============================ */
+
 .operational-card {
   background: #ffffff;
   padding: 25px;

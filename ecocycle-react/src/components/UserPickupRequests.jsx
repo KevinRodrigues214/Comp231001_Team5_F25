@@ -47,7 +47,7 @@ export default function UserPickupRequests({ showViewAll = true }) {
             </button>
           )}
 
-          {/* ALWAYS SHOW "NEW PICK-UP" */}
+         
         </div>
       </div>
 

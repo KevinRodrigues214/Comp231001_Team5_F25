@@ -17,7 +17,6 @@ export default function Home() {
         <p>Clean Future Begins With Us.</p>
       </div>
 
-      {/* Dashboard shows an overview of everything */}
       <main className="home-main">
         <UserChallenges showViewAll={true} />
         <UserEvents showViewAll={true} />

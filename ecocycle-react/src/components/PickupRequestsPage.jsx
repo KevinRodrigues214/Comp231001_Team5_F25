@@ -93,7 +93,7 @@ export default function PickupRequestsPage() {
       </div>
 
       <main className="home-main">
-        {/* Form card */}
+       
         <section className="pickup-section">
           <div className="pickup-header-row">
             <div>
@@ -183,7 +183,7 @@ export default function PickupRequestsPage() {
           </form>
         </section>
 
-        {/* List card */}
+       
         <section className="pickup-section">
           <div className="pickup-header-row">
             <div>
